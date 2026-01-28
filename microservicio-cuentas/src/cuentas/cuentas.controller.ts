@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
-  HttpCode, 
-  HttpStatus 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CuentasService } from './cuentas.service';
@@ -21,16 +21,18 @@ export class CuentasController {
 
   @Post()
   @ApiOperation({ summary: 'Crear una nueva cuenta' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Cuenta creada exitosamente',
-    type: CuentaResponseDto
+    type: CuentaResponseDto,
   })
-  @ApiResponse({ 
-    status: 409, 
-    description: 'Conflicto - Número de cuenta ya existe' 
+  @ApiResponse({
+    status: 409,
+    description: 'Conflicto - Número de cuenta ya existe',
   })
-  async crearCuenta(@Body() request: CuentaRequestDto): Promise<CuentaResponseDto> {
+  async crearCuenta(
+    @Body() request: CuentaRequestDto,
+  ): Promise<CuentaResponseDto> {
     return this.cuentasService.crearCuenta(request);
   }
 
@@ -59,7 +61,9 @@ export class CuentasController {
   @Get('socio/:socioId')
   @ApiOperation({ summary: 'Obtener cuentas por socio' })
   @ApiParam({ name: 'socioId', description: 'ID del socio' })
-  async obtenerPorSocio(@Param('socioId') socioId: string): Promise<CuentaResponseDto[]> {
+  async obtenerPorSocio(
+    @Param('socioId') socioId: string,
+  ): Promise<CuentaResponseDto[]> {
     return this.cuentasService.obtenerCuentasPorSocio(socioId);
   }
 
