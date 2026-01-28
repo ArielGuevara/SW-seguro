@@ -1,8 +1,8 @@
-import { Link, Navigate, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { usePartner } from "../hooks/usePartner";
 import type { AccountRequestDTO } from "../models/account";
-import { Field, Form, Formik } from "formik";
-import { useMemo } from "react";
+import { Field, Form, Formik, type FormikHelpers } from "formik";
+import { useMemo, useState } from "react";
 import { useAccount } from "../hooks/useAccount";
 import { useAccountsByPartner } from "../hooks/useAccountsByPartner";
 
@@ -12,6 +12,7 @@ export function Account() {
   const { accounts } = useAccountsByPartner({ id: partnerId });
   const { createAccount } = useAccount();
   const navigate = useNavigate();
+  const [formError, setFormError] = useState("");
 
   const initValues = useMemo(() => {
     const nextCountAccount = ((accounts?.length ?? 0) + 1)
@@ -28,14 +29,20 @@ export function Account() {
     };
   }, [partner?.id, partner?.identificacion, accounts]);
 
-  const onSubmit = async (values: AccountRequestDTO) => {
-    await createAccount(values);
-    navigate(`/partner/${partnerId}`, { replace: true });
+  const onSubmit = async (
+    values: AccountRequestDTO,
+    { resetForm, setSubmitting }: FormikHelpers<AccountRequestDTO>,
+  ) => {
+    try {
+      await createAccount(values);
+      resetForm();
+      navigate(`/partner/${partnerId}`, { replace: true });
+    } catch {
+      setFormError("Socio no pudo ser registrado");
+    } finally {
+      setSubmitting(false);
+    }
   };
-
-  if (!partnerId) {
-    return <Navigate to={"/"} replace />;
-  }
 
   return (
     <main>
@@ -47,23 +54,47 @@ export function Account() {
         <Form>
           <div>
             <label htmlFor="numeroCuenta">Numero de cuenta</label>
-            <Field type="text" id="numeroCuenta" name="numeroCuenta" readOnly />
+            <Field
+              type="text"
+              id="numeroCuenta"
+              name="numeroCuenta"
+              readOnly
+              data-cy="input-numeroCuenta"
+            />
           </div>
           <div>
             <label htmlFor="saldo">Saldo</label>
-            <Field type="number" id="saldo" name="saldo" readOnly />
+            <Field
+              type="number"
+              id="saldo"
+              name="saldo"
+              readOnly
+              data-cy="input-saldo"
+            />
           </div>
           <div>
             <label htmlFor="tipoCuenta">Tipo de cuenta</label>
-            <Field as="select" id="tipoCuenta" name="tipoCuenta">
+            <Field
+              as="select"
+              id="tipoCuenta"
+              name="tipoCuenta"
+              data-cy="input-tipoCuenta"
+            >
               <option value={"AHORRO"}>Ahorro</option>
               <option value={"CORRIENTE"}>Corriente</option>
             </Field>
           </div>
           <button type="submit">Crear</button>
+          {formError && (
+            <p id="error-form" data-cy="error-form">
+              {formError}
+            </p>
+          )}
         </Form>
       </Formik>
-      <Link to={`/partner/${partnerId}`}>Ver mis cuentas</Link>
+      <Link to={`/partner/${partnerId}`} data-cy="partner-accounts-link">
+        Ver mis cuentas
+      </Link>
     </main>
   );
 }

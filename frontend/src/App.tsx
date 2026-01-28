@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { Home } from "./pages/Home";
 import { Register } from "./pages/Register";
 import { Partner } from "./pages/Partner";
@@ -9,9 +9,10 @@ function App() {
   return (
     <Routes>
       <Route>
-        <Route index element={<Home />}></Route>
-        <Route path="/register" element={<Register />} />
-        <Route path="/partner/:partnerId">
+        <Route index element={<Home />} />
+        <Route path="register" element={<Register />} />
+        <Route path="partner" element={<Navigate to="/" replace />} />
+        <Route path="partner/:partnerId">
           <Route index element={<Partner />} />
           <Route path="account" element={<Account />} />
         </Route>
