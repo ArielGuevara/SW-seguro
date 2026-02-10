@@ -67,7 +67,6 @@ public class CuentaIntegrationService {
 
         Object responseObj = rabbitTemplate.convertSendAndReceive(exchange, routingKeyPrestamo, request);
 
-        // 2. Aquí aplicamos la corrección: Convertir lo que llegue a nuestra clase
         if (responseObj != null) {
             try {
                 // NestJS nos devuelve un Map, Jackson lo convierte a nuestro objeto Java
